@@ -18,13 +18,12 @@
  */
 package org.apache.hadoop.hbase.filter;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import dk.brics.automaton.Automaton;
 import dk.brics.automaton.RegExp;
 import dk.brics.automaton.RunAutomaton;
@@ -35,7 +34,6 @@ import org.apache.hadoop.hbase.classification.InterfaceStability;
 import org.apache.hadoop.hbase.exceptions.DeserializationException;
 import org.apache.hadoop.hbase.protobuf.generated.ComparatorProtos;
 import org.apache.hadoop.hbase.util.Bytes;
-
 import org.jcodings.Encoding;
 import org.jcodings.EncodingDB;
 import org.jcodings.specific.UTF8Encoding;
@@ -72,6 +70,7 @@ import org.joni.Syntax;
  * ValueFilter vf = new ValueFilter(CompareOp.EQUAL,
  *     new ExtendedRegexStringComparator("regex", Pattern.CASE_INSENSITIVE | Pattern.DOTALL));
  * </pre>
+ *
  * @see Pattern
  */
 @InterfaceAudience.Public
@@ -82,7 +81,9 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
 
   private Engine engine;
 
-  /** Engine implementation type (default=JAVA) */
+  /**
+   * Engine implementation type (default=JAVA)
+   */
   @InterfaceAudience.Public
   @InterfaceStability.Stable
   public enum EngineType {
@@ -97,6 +98,7 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
   /**
    * Constructor
    * Adds Pattern.DOTALL to the underlying Pattern
+   *
    * @param expr a valid regular expression
    */
   public ExtendedRegexStringComparator(String expr) {
@@ -106,7 +108,8 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
   /**
    * Constructor
    * Adds Pattern.DOTALL to the underlying Pattern
-   * @param expr a valid regular expression
+   *
+   * @param expr   a valid regular expression
    * @param engine engine implementation type
    */
   public ExtendedRegexStringComparator(String expr, EngineType engine) {
@@ -115,7 +118,8 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
 
   /**
    * Constructor
-   * @param expr a valid regular expression
+   *
+   * @param expr  a valid regular expression
    * @param flags java.util.regex.Pattern flags
    */
   public ExtendedRegexStringComparator(String expr, int flags) {
@@ -124,8 +128,9 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
 
   /**
    * Constructor
-   * @param expr a valid regular expression
-   * @param flags java.util.regex.Pattern flags
+   *
+   * @param expr   a valid regular expression
+   * @param flags  java.util.regex.Pattern flags
    * @param engine engine implementation type
    */
   public ExtendedRegexStringComparator(String expr, int flags, EngineType engine) {
@@ -161,6 +166,7 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
    * <p>
    * If the row key is made of arbitrary bytes, the charset {@code ISO-8859-1}
    * is recommended.
+   *
    * @param charset The charset to use.
    */
   public void setCharset(final Charset charset) {
@@ -176,18 +182,19 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
    * @return The comparator serialized using pb
    */
   @Override
-  public byte [] toByteArray() {
+  public byte[] toByteArray() {
     return engine.toByteArray();
   }
 
   /**
    * @param pbBytes A pb serialized {@link ExtendedRegexStringComparator} instance
+   *
    * @return An instance of {@link ExtendedRegexStringComparator} made from <code>bytes</code>
-   * @throws DeserializationException
+   *
    * @see #toByteArray
    */
-  public static ExtendedRegexStringComparator parseFrom(final byte [] pbBytes)
-  throws DeserializationException {
+  public static ExtendedRegexStringComparator parseFrom(final byte[] pbBytes)
+    throws DeserializationException {
     ComparatorProtos.RegexStringComparator proto;
     try {
       proto = ComparatorProtos.RegexStringComparator.parseFrom(pbBytes);
@@ -214,20 +221,23 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
   }
 
   /**
-   * @param other
    * @return true if and only if the fields of the comparator that are serialized
    * are equal to the corresponding fields in other.  Used for testing.
    */
   @Override
   boolean areSerializedFieldsEqual(ByteArrayComparable other) {
-    if (other == this) return true;
-    if (!(other instanceof ExtendedRegexStringComparator)) return false;
-    ExtendedRegexStringComparator comparator = (ExtendedRegexStringComparator)other;
+    if (other == this) {
+      return true;
+    }
+    if (!(other instanceof ExtendedRegexStringComparator)) {
+      return false;
+    }
+    ExtendedRegexStringComparator comparator = (ExtendedRegexStringComparator) other;
     return super.areSerializedFieldsEqual(comparator)
-      && engine.getClass().isInstance(comparator.getEngine())
-      && engine.getPattern().equals(comparator.getEngine().getPattern())
-      && engine.getFlags() == comparator.getEngine().getFlags()
-      && engine.getCharset().equals(comparator.getEngine().getCharset());
+           && engine.getClass().isInstance(comparator.getEngine())
+           && engine.getPattern().equals(comparator.getEngine().getPattern())
+           && engine.getFlags() == comparator.getEngine().getFlags()
+           && engine.getCharset().equals(comparator.getEngine().getCharset());
   }
 
   private Engine getEngine() {
@@ -239,6 +249,7 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
    * expression matching engines.
    */
   private interface Engine {
+
     /**
      * Returns the string representation of the configured regular expression
      * for matching
@@ -258,6 +269,7 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
 
     /**
      * Set the charset used when matching
+     *
      * @param charset the name of the desired charset for matching
      */
     void setCharset(final String charset);
@@ -265,19 +277,22 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
     /**
      * Return the serialized form of the configured matcher
      */
-    byte [] toByteArray();
+    byte[] toByteArray();
 
     /**
      * Match the given input against the configured pattern
-     * @param value the data to be matched
+     *
+     * @param value  the data to be matched
      * @param offset offset of the data to be matched
      * @param length length of the data to be matched
+     *
      * @return 0 if a match was made, 1 otherwise
      */
     int compareTo(byte[] value, int offset, int length);
   }
 
   private abstract static class BaseRegexEngine implements Engine {
+
     private Charset charset = Charset.forName("UTF-8");
 
     private final String regex;
@@ -313,7 +328,7 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
     @Override
     public byte[] toByteArray() {
       ComparatorProtos.RegexStringComparator.Builder builder =
-          ComparatorProtos.RegexStringComparator.newBuilder();
+        ComparatorProtos.RegexStringComparator.newBuilder();
       builder.setPattern(regex);
       builder.setPatternFlags(flags);
       builder.setCharset(charset.name());
@@ -344,6 +359,7 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
    * This is the default engine.
    */
   private static class JavaRegexEngine extends BaseRegexEngine {
+
     private final Pattern pattern;
 
     private JavaRegexEngine(String regex, int flags) {
@@ -370,6 +386,7 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
    * MULTILINE are supported.
    */
   private static class JoniRegexEngine implements Engine {
+
     private Encoding encoding = UTF8Encoding.INSTANCE;
     private final String regex;
     private final Regex pattern;
@@ -411,12 +428,12 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
     @Override
     public byte[] toByteArray() {
       ComparatorProtos.RegexStringComparator.Builder builder =
-          ComparatorProtos.RegexStringComparator.newBuilder();
-        builder.setPattern(regex);
-        builder.setPatternFlags(joniToPatternFlags(pattern.getOptions()));
-        builder.setCharset(encoding.getCharsetName());
-        builder.setEngine(EngineType.JONI.name());
-        return builder.build().toByteArray();
+        ComparatorProtos.RegexStringComparator.newBuilder();
+      builder.setPattern(regex);
+      builder.setPatternFlags(joniToPatternFlags(pattern.getOptions()));
+      builder.setCharset(encoding.getCharsetName());
+      builder.setEngine(EngineType.JONI.name());
+      return builder.build().toByteArray();
     }
 
     private static int patternToJoniFlags(int flags) {
@@ -464,6 +481,7 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
   }
 
   private static class Re2JRegexEngine extends BaseRegexEngine {
+
     private final com.google.re2j.Pattern pattern;
 
     private Re2JRegexEngine(String regex, int flags) {
@@ -479,6 +497,7 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
   }
 
   private static class BricsRegexEngine extends BaseRegexEngine {
+
     private final Automaton automaton;
 
     private BricsRegexEngine(String expr, int flags) {
@@ -489,10 +508,12 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
 
     @Override
     protected boolean doMatch(String matchString) {
-      return automaton.run(matchString);    }
+      return automaton.run(matchString);
+    }
   }
 
   private static class FastBricsRegexEngine extends BaseRegexEngine {
+
     private final RunAutomaton automaton;
 
     private FastBricsRegexEngine(String expr, boolean tableize) {
