@@ -14,24 +14,34 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <junit.jupiter.version>5.1.1</junit.jupiter.version>
+    <automaton.version>1.12-1</automaton.version>
+    <hbase.version>1.1.2</hbase.version>
+    <re2j.version>1.2</re2j.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>com.google.re2j</groupId>
       <artifactId>re2j</artifactId>
-      <version>1.2</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.hbase</groupId>
-      <artifactId>hbase-client</artifactId>
-      <version>1.1.2</version>
-      <scope>provided</scope>
+      <version>${re2j.version}</version>
     </dependency>
     <dependency>
       <groupId>dk.brics</groupId>
       <artifactId>automaton</artifactId>
-      <version>1.12-1</version>
+      <version>${automaton.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>${junit.jupiter.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.hbase</groupId>
+      <artifactId>hbase-client</artifactId>
+      <version>${hbase.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
@@ -53,7 +63,7 @@
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.20.1</version>
+          <version>2.21.0</version>
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
@@ -84,6 +94,22 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-surefire-provider</artifactId>
+            <version>1.2.0-M1</version>
+          </dependency>
+          <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
