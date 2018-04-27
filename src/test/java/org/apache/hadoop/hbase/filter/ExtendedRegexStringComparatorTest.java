@@ -6,9 +6,51 @@ import dk.brics.automaton.RegExp;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ExtendedRegexStringComparatorTest {
+
+  @Test
+  public void testSerialization() throws Exception {
+    // Default engine is the Java engine
+    ExtendedRegexStringComparator a = new ExtendedRegexStringComparator("a|b");
+    ExtendedRegexStringComparator b = ExtendedRegexStringComparator.parseFrom(a.toByteArray());
+    assertTrue(a.areSerializedFieldsEqual(b));
+    assertTrue(b.getEngine() instanceof ExtendedRegexStringComparator.JavaRegexEngine);
+
+    // joni engine
+    a = new ExtendedRegexStringComparator("a|b", ExtendedRegexStringComparator.EngineType.JONI);
+    b = ExtendedRegexStringComparator.parseFrom(a.toByteArray());
+    assertTrue(a.areSerializedFieldsEqual(b));
+    assertTrue(b.getEngine() instanceof ExtendedRegexStringComparator.JoniRegexEngine);
+
+    // re2j engine
+    a = new ExtendedRegexStringComparator("a|b", ExtendedRegexStringComparator.EngineType.RE2J);
+    b = ExtendedRegexStringComparator.parseFrom(a.toByteArray());
+    assertTrue(a.areSerializedFieldsEqual(b));
+    assertTrue(b.getEngine() instanceof ExtendedRegexStringComparator.Re2JRegexEngine);
+
+    // brics engine
+    a = new ExtendedRegexStringComparator("a|b", ExtendedRegexStringComparator.EngineType.BRICS);
+    b = ExtendedRegexStringComparator.parseFrom(a.toByteArray());
+    assertTrue(a.areSerializedFieldsEqual(b));
+    assertTrue(b.getEngine() instanceof ExtendedRegexStringComparator.BricsRegexEngine);
+
+    // fast brics engine
+    a = new ExtendedRegexStringComparator("a|b", ExtendedRegexStringComparator.EngineType.FAST_BRICS);
+    b = ExtendedRegexStringComparator.parseFrom(a.toByteArray());
+    assertTrue(a.areSerializedFieldsEqual(b));
+    assertTrue(b.getEngine() instanceof ExtendedRegexStringComparator.FastBricsRegexEngine);
+
+    // fastest brics engine
+    a = new ExtendedRegexStringComparator("a|b", ExtendedRegexStringComparator.EngineType.FASTEST_BRICS);
+    b = ExtendedRegexStringComparator.parseFrom(a.toByteArray());
+    assertTrue(a.areSerializedFieldsEqual(b));
+    assertTrue(b.getEngine() instanceof ExtendedRegexStringComparator.FastBricsRegexEngine);
+
+  }
+
 
   @Test
   public void testJavaEngine() throws Exception {

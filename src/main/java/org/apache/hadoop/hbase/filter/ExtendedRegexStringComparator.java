@@ -113,7 +113,7 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
    * @param engine engine implementation type
    */
   public ExtendedRegexStringComparator(String expr, EngineType engine) {
-    this(expr, Pattern.DOTALL, engine);
+    this(expr, com.google.re2j.Pattern.DOTALL, engine);
   }
 
   /**
@@ -240,7 +240,7 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
            && engine.getCharset().equals(comparator.getEngine().getCharset());
   }
 
-  private Engine getEngine() {
+  Engine getEngine() {
     return engine;
   }
 
@@ -358,7 +358,7 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
    * <p>
    * This is the default engine.
    */
-  private static class JavaRegexEngine extends BaseRegexEngine {
+  static class JavaRegexEngine extends BaseRegexEngine {
 
     private final Pattern pattern;
 
@@ -385,7 +385,7 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
    * NOTE: Only the {@link Pattern} flags CASE_INSENSITIVE, DOTALL, and
    * MULTILINE are supported.
    */
-  private static class JoniRegexEngine implements Engine {
+  static class JoniRegexEngine implements Engine {
 
     private Encoding encoding = UTF8Encoding.INSTANCE;
     private final String regex;
@@ -480,7 +480,7 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
     }
   }
 
-  private static class Re2JRegexEngine extends BaseRegexEngine {
+  static class Re2JRegexEngine extends BaseRegexEngine {
 
     private final com.google.re2j.Pattern pattern;
 
@@ -496,7 +496,7 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
     }
   }
 
-  private static class BricsRegexEngine extends BaseRegexEngine {
+  static class BricsRegexEngine extends BaseRegexEngine {
 
     private final Automaton automaton;
 
@@ -512,7 +512,7 @@ public class ExtendedRegexStringComparator extends ByteArrayComparable {
     }
   }
 
-  private static class FastBricsRegexEngine extends BaseRegexEngine {
+  static class FastBricsRegexEngine extends BaseRegexEngine {
 
     private final RunAutomaton automaton;
 
