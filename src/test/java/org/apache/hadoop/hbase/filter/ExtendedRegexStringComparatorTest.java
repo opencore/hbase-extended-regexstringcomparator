@@ -3,6 +3,9 @@ package org.apache.hadoop.hbase.filter;
 import java.util.regex.Pattern;
 
 import dk.brics.automaton.RegExp;
+import org.apache.hadoop.hbase.exceptions.DeserializationException;
+import org.apache.hadoop.hbase.protobuf.ProtobufUtil;
+import org.apache.hadoop.hbase.protobuf.generated.FilterProtos;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.junit.jupiter.api.Test;
 
@@ -110,6 +113,19 @@ class ExtendedRegexStringComparatorTest {
           .compareTo(Bytes.toBytes(t.haystack)) == 0;
       assertEquals(t.expected, result, "Regex '" + t.regex + "' failed test '" + t.haystack + "'");
     }
+  }
+
+  @Test
+  public void testFilter() throws Exception {
+    QualifierFilter a = new QualifierFilter(CompareFilter.CompareOp.EQUAL,
+      new ExtendedRegexStringComparator("foobar", 0, ExtendedRegexStringComparator.EngineType.RE2J));
+    QualifierFilter b = QualifierFilter.parseFrom(a.toByteArray());
+    assertTrue(a.areSerializedFieldsEqual(b));
+
+    FilterProtos.Filter protoA = ProtobufUtil.toFilter(a);
+    Filter c = ProtobufUtil.toFilter(protoA);
+
+    assertTrue(a.areSerializedFieldsEqual(c));
   }
 
   private static class TestCase {
